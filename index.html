@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mini Slot Game - Multi User</title>
+<style>
+  body {
+    font-family: sans-serif;
+    background: #222;
+    color: #fff;
+    margin: 0;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    overflow-x: hidden;
+  }
+
+  /* Pages */
+  .page { 
+  display: none; 
+  text-align: center; 
+  width: 100%; 
+  position: relative; 
+  box-sizing: border-box; }
+  .active { 
+    display: flex; 
+    flex-direction: column; 
+    justify-content: center; 
+    align-items: center; }
+
+  /* Buttons */
+  button {
+    padding: 12px 25px; 
+    font-size: 18px; 
+    cursor: pointer; 
+    border-radius: 10px;
+    border: none; 
+    background: gold; 
+    color: #000; 
+    font-weight: bold; 
+    margin: 5px;
+  }
+
+  /* Logout button khusus */
+  #logoutBtn {
+    padding: 8px 15px; 
+    font-size: 14px; 
+    background: red; 
+    color: white;
+    border: none; 
+    border-radius: 8px; 
+    cursor: pointer;
+  }
+
+  /* Slots */
+  .slot-machine { 
+  display: flex; 
+  justify-content: center; 
+  margin-bottom: 20px; }
+  .slot { 
+  font-size: 60px; 
+  width: 100px; 
+  height: 100px; 
+  line-height: 100px;
+  border: 3px solid #fff; 
+  margin: 0 10px; 
+  border-radius: 15px; 
+  background: #333;
+  transition: transform 0.1s; }
+
+  #result { 
+    margin-top: 20px; 
+    font-size: 28px; }
+
+  /* Footer */
+  .footer {
+    position: fixed; 
+    bottom: 0; 
+    left: 0; 
+    width: 100%;
+    font-size: 14px; 
+    color: #aaa; 
+    text-align: center; 
+    padding: 5px 0;
+    background: rgba(0,0,0,0.5);
+  }
+  .footer a { 
+    color: gold; 
+    text-decoration: none; 
+    font-weight: bold; 
+    margin-left: 5px; }
+
+  /* Promo Banner GIF */
+  #promoBanner {
+    position: fixed; 
+    top: 10px; 
+    left: 0; 
+    width: 100%; 
+    text-align: center; 
+    z-index: 999;
+  }
+  #promoBanner img { 
+    max-width: 95%; 
+    height: auto; 
+    cursor: pointer; }
+
+  /* Spinner Loading */
+  .spinner { 
+    border: 6px solid #444; 
+    border-top: 6px solid gold; 
+    border-radius: 50%; 
+    width:60px; 
+    height:60px; 
+    animation: spin 1s linear infinite; 
+    margin-bottom:10px;
+    
+  }
+  
+  @keyframes 
+  spin {0%{transform:rotate(0deg);}
+  100%{transform:rotate(360deg);}}
+
+  /* Popups */
+  .popup {
+    position: fixed; 
+    top: 50%; 
+    left: 50%; 
+    transform: translate(-50%, -50%) scale(0);
+    background: #333; 
+    padding: 30px; 
+    border-radius: 15px; 
+    text-align: center;
+    z-index: 1000; 
+    width: 300px; 
+    box-shadow: 0 0 15px #000; 
+    display: none;
+    transition: transform 0.3s;
+  }
+  .popup.show { 
+    transform: translate(-50%,-50%) scale(1); 
+    
+  }
+  
+  .popup input { 
+    width: 80%; 
+    padding: 10px; 
+    font-size: 18px; 
+    border-radius:10px; 
+    border:none; 
+    margin:5px 0; 
+    text-align:center; 
+    
+  }
+
+  /* User Card */
+  #userCard { 
+    background: #333; 
+    padding:20px; 
+    border-radius:15px; 
+    margin-bottom:20px; 
+    width:300px; 
+    text-align:left; 
+    box-shadow:0 0 0px #000; 
+    color: gold; 
+  }
+  
+  #logoutWrapper { 
+    margin-top:10px; 
+    display:flex; 
+    justify-content:flex-start; 
+  }
+  
+</style>
+</head>
+<body>
+
+<!-- Welcome Page -->
+<div id="welcomePage" class="page active">
+  <h1>Selamat Datang di Mini Slot Game!</h1>
+  <button id="startBtn">Mulai Main</button>
+</div>
+
+<!-- Loading Page -->
+<div id="loadingPage" class="page">
+  <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100vh;">
+    <div class="spinner"></div>
+    <p style="margin-top:15px; font-size:18px; color:#ccc;">Entering game session...</p>
+  </div>
+</div>
+
+<!-- Game Page -->
+<div id="gamePage" class="page">
+  <!-- Promo Banner -->
+  <div id="promoBanner">
+    <a href="https://github.com/satmacihuy/Fishing-Game-Full-HTML" target="_blank">
+      <img src="promo1.png" alt="Check my GitHub">
+    </a>
+  </div>
+
+  <h1>Mini Slot Game</h1>
+
+  <!-- User & Balance Card -->
+  <div id="userCard">
+    <div id="currentUserDisplay">User: -</div>
+    <div id="balance">Balance: Rp 0</div>
+    <div id="logoutWrapper">
+      <button id="logoutBtn">Logout</button>
+    </div>
+  </div>
+
+  <!-- Slot Machine -->
+  <div class="slot-machine">
+    <div class="slot" id="slot1">🍎</div>
+    <div class="slot" id="slot2">🍌</div>
+    <div class="slot" id="slot3">🍒</div>
+  </div>
+
+  <!-- Buttons -->
+  <div>
+    <button id="depositBtn">Deposit</button>
+    <button id="spinBtn">Spin</button>
+  </div>
+
+  <div id="result"></div>
+
+  <!-- Footer -->
+  <div class="footer">
+    Mini Slot Game by Tama 2026 <br>
+    Interested in seeing the code for this website? 
+    <a href="https://github.com/satmacihuy/Fishing-Game-Full-HTML" target="_blank">Click here</a>
+  </div>
+</div>
+
+<!-- Login / Sign Up Popup -->
+<div id="loginPopup" class="popup">
+  <h3>Login / Sign Up</h3>
+  <input type="text" id="usernameInput" placeholder="Username">
+  <input type="password" id="passwordInput" placeholder="Password">
+  <div>
+    <button id="loginBtn">Login</button>
+    <button id="signupBtn">Sign Up</button>
+  </div>
+</div>
+
+<!-- Deposit Popup -->
+<div id="depositPopup" class="popup">
+  <p>Enter deposit amount (min 1000):</p>
+  <input type="number" id="depositInput" min="1000" placeholder="1000">
+  <div><button id="confirmDeposit">OK</button></div>
+</div>
+
+<!-- Custom Alert Popup -->
+<div id="customPopup" class="popup">
+  <p id="customPopupText"></p>
+  <button id="customPopupOk">OK</button>
+</div>
+
+<!-- Audio -->
+<audio id="spinSound" src="spin.mp3"></audio>
+<audio id="jackpotSound" src="jackpot.mp3"></audio>
+<audio id="bgMusic" src="bgmusic.mp3" loop></audio>
+
+<script>
+const startBtn=document.getElementById('startBtn');
+const welcomePage=document.getElementById('welcomePage');
+const loadingPage=document.getElementById('loadingPage');
+const gamePage=document.getElementById('gamePage');
+const balanceDiv=document.getElementById('balance');
+const currentUserDisplay=document.getElementById('currentUserDisplay');
+const slots=[document.getElementById('slot1'),document.getElementById('slot2'),document.getElementById('slot3')];
+const resultDiv=document.getElementById('result');
+const spinBtn=document.getElementById('spinBtn');
+const depositBtn=document.getElementById('depositBtn');
+const depositPopup=document.getElementById('depositPopup');
+const depositInput=document.getElementById('depositInput');
+const confirmDeposit=document.getElementById('confirmDeposit');
+const customPopup=document.getElementById('customPopup');
+const customPopupText=document.getElementById('customPopupText');
+const customPopupOk=document.getElementById('customPopupOk');
+const loginPopup=document.getElementById('loginPopup');
+const usernameInput=document.getElementById('usernameInput');
+const passwordInput=document.getElementById('passwordInput');
+const loginBtn=document.getElementById('loginBtn');
+const signupBtn=document.getElementById('signupBtn');
+const logoutBtn=document.getElementById('logoutBtn');
+
+const symbols=['🍎','🍌','🍒','🍇','🍉'];
+const spinSound=document.getElementById('spinSound');
+const jackpotSound=document.getElementById('jackpotSound');
+const bgMusic=document.getElementById('bgMusic');
+bgMusic.volume=0.3; spinSound.volume=0.7; jackpotSound.volume=1;
+
+let currentUser="";
+let currentDeposit=0;
+
+// Custom popup
+function showCustomPopup(msg,callback){
+  customPopupText.textContent=msg;
+  customPopup.style.display='block';
+  customPopup.style.transform='translate(-50%,-50%) scale(1)';
+  customPopupOk.onclick=()=>{
+    customPopup.style.transform='translate(-50%,-50%) scale(0)';
+    setTimeout(()=>{customPopup.style.display='none'; if(callback) callback(); },300);
+  }
+}
+
+// LocalStorage functions
+function getUsers(){ return JSON.parse(localStorage.getItem('slotUsers')||'{}'); }
+function saveUsers(users){ localStorage.setItem('slotUsers', JSON.stringify(users)); }
+function getBalance(user){ let users=getUsers(); return users[user]?.balance||10000; }
+function setBalance(user,balance){ let users=getUsers(); users[user].balance=balance; saveUsers(users); }
+function updateBalanceUI(){ 
+  balanceDiv.textContent=`Balance: Rp ${getBalance(currentUser).toLocaleString('id-ID')}`;
+  currentUserDisplay.textContent=`User: ${currentUser}`;
+}
+
+// Flow: Welcome → Login
+startBtn.addEventListener('click',()=>{
+  welcomePage.classList.remove('active');
+  loginPopup.style.display='block';
+  loginPopup.classList.add('show');
+});
+
+// Sign Up
+signupBtn.addEventListener('click',()=>{
+  const username=usernameInput.value.trim();
+  const password=passwordInput.value.trim();
+  if(!username||!password){ showCustomPopup("Masukkan username & password!"); return; }
+  let users=getUsers();
+  if(users[username]){ showCustomPopup("Username sudah ada!"); return; }
+  users[username]={password:password,balance:10000};
+  saveUsers(users);
+  showCustomPopup("Akun berhasil dibuat, silakan login!");
+});
+
+// Login
+loginBtn.addEventListener('click',()=>{
+  const username=usernameInput.value.trim();
+  const password=passwordInput.value.trim();
+  if(!username||!password){ showCustomPopup("Masukkan username & password!"); return; }
+  const users=getUsers();
+  if(!users[username]||users[username].password!==password){ showCustomPopup("Akun tidak ditemukan!"); return; }
+  currentUser=username;
+  loginPopup.style.display='none';
+  loadingPage.classList.add('active');
+  bgMusic.play().catch(()=>{});
+  setTimeout(()=>{
+    loadingPage.classList.remove('active');
+    gamePage.classList.add('active');
+    updateBalanceUI();
+    spinBtn.disabled=false;
+  },2000);
+});
+
+// Logout
+logoutBtn.addEventListener('click',()=>{
+  currentUser="";
+  currentDeposit=0;
+  spinBtn.disabled=false;
+  gamePage.classList.remove('active');
+  welcomePage.classList.add('active');
+  usernameInput.value=''; passwordInput.value='';
+});
+
+// Deposit
+depositBtn.addEventListener('click',()=>{
+  depositInput.value='';
+  depositPopup.style.display='block';
+  depositPopup.classList.add('show');
+});
+confirmDeposit.addEventListener('click',()=>{
+  let deposit=parseInt(depositInput.value);
+  if(isNaN(deposit)||deposit<1000){ showCustomPopup("Minimal deposit 1000!"); return; }
+  let balance=getBalance(currentUser);
+  if(deposit>balance){ showCustomPopup("Saldo tidak cukup!"); return; }
+  currentDeposit=deposit;
+  setBalance(currentUser,balance-deposit);
+  updateBalanceUI();
+  depositPopup.style.display='none';
+  showCustomPopup(`Deposit Rp ${deposit.toLocaleString('id-ID')} berhasil! Silahkan spin`);
+});
+
+// Spin
+function getRandomSymbol(){ return symbols[Math.floor(Math.random()*symbols.length)]; }
+spinBtn.addEventListener('click',()=>{
+  if(currentDeposit <= 0){ showCustomPopup("Deposit dulu sebelum spin!"); return; }
+  spinBtn.disabled = true;
+  resultDiv.textContent = "Spinning...";
+  spinSound.currentTime=0; spinSound.play();
+
+  let animationCount=0, maxAnimation=15;
+  const interval = setInterval(()=>{
+    slots.forEach(slot=>slot.textContent = getRandomSymbol());
+    animationCount++;
+    if(animationCount >= maxAnimation){
+      clearInterval(interval);
+      const final = slots.map(()=>getRandomSymbol());
+      slots.forEach((slot,idx)=>slot.textContent=final[idx]);
+
+      let balance = getBalance(currentUser);
+      if(final[0]===final[1] && final[1]===final[2]){
+        const win=currentDeposit*10; balance+=win;
+        resultDiv.textContent=`Jackpot! 🎉 +Rp ${win.toLocaleString('id-ID')}`;
+        jackpotSound.currentTime=0; jackpotSound.play();
+      } else if(final[0]===final[1] || final[1]===final[2] || final[0]===final[2]){
+        const win=Math.floor(currentDeposit*1.5); balance+=win;
+        resultDiv.textContent=`Pair! +Rp ${win.toLocaleString('id-ID')}`;
+      } else {
+        resultDiv.textContent="Zonk! 😢";
+      }
+
+      setBalance(currentUser,balance);
+      updateBalanceUI();
+      currentDeposit=0;
+      spinBtn.disabled=false;
+    }
+  },195);
+});
+</script>
+</body>
+</html>

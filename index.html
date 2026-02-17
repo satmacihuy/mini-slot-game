@@ -195,7 +195,7 @@
 <div id="gamePage" class="page">
   <!-- Promo Banner -->
   <div id="promoBanner">
-    <a href="https://github.com/satmacihuy/Fishing-Game-Full-HTML" target="_blank">
+    <a href="https://github.com/satmacihuy" target="_blank">
       <img src="promo1.png" alt="Check my GitHub">
     </a>
   </div>
@@ -230,7 +230,7 @@
   <div class="footer">
     Mini Slot Game by Tama 2026 <br>
     Interested in seeing the code for this website? 
-    <a href="https://github.com/satmacihuy/Fishing-Game-Full-HTML" target="_blank">Click here</a>
+    <a href="https://github.com/satmacihuy/mini-slot-game" target="_blank">Click here</a>
   </div>
 </div>
 
@@ -342,7 +342,7 @@ loginBtn.addEventListener('click',()=>{
   const password=passwordInput.value.trim();
   if(!username||!password){ showCustomPopup("Masukkan username & password!"); return; }
   const users=getUsers();
-  if(!users[username]||users[username].password!==password){ showCustomPopup("Akun tidak ditemukan!"); return; }
+  if(!users[username]||users[username].password!==password){ showCustomPopup("Akun tidak ditemukan! Silahkan cek Username atau Password anda. Atau buat akun baru. "); return; }
   currentUser=username;
   loginPopup.style.display='none';
   loadingPage.classList.add('active');
